@@ -3,12 +3,10 @@ kind: Service
 metadata:
   name: todo-app-svc
 spec:
-  type: NodePort
+  type: ClusterIP  
   selector:
-    app: todo  # this matches your deployment label
+    app: todo 
   ports:
-    - name: http
-      nodePort: 30080
+    - port: 1234 # Port exposed outside the cluster
       protocol: TCP
-      port: 1234
-      targetPort: 4000  # this matches the container's internal port
+      targetPort: 4000 # Container's actual listening port
