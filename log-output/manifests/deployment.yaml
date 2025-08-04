@@ -12,6 +12,18 @@ spec:
       labels:
         app: log-output
     spec:
+      volumes:
+        - name: shared-logs
+          emptyDir: {}
       containers:
-        - name: log-output
-          image: dev1abhi/log-output:1.1
+        - name: log-writer
+          image: dev1abhi/log-writer:1.0
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /shared
+
+        - name: log-reader
+          image: dev1abhi/log-reader:1.1
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /shared
