@@ -12,9 +12,15 @@ spec:
       labels:
         app: todo
     spec:
+      volumes:
+        - name: image-cache
+          emptyDir: {}  # non persistent volume for caching images
       containers:
         - name: todo-container
-          image: dev1abhi/todo-app:1.1
+          image: dev1abhi/todo-app:1.3
           env:
            - name: PORT
              value: "4000"
+          volumeMounts:
+            - name: image-cache
+              mountPath: /cache
