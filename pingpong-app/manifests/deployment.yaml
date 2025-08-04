@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pingpong-app
+  name: pingpong-dep
 spec:
   replicas: 1
   selector:
@@ -12,7 +12,14 @@ spec:
       labels:
         app: pingpong
     spec:
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: shared-pvc
       containers:
-        - name: pingpong-container
-          image: dev1abhi/pingpong-app:1.0
+        - name: pingpong
+          image: dev1abhi/pingpong-app:1.1
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /shared
 
