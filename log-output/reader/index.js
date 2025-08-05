@@ -20,6 +20,7 @@ const PINGPONG_URL = 'http://pingpong-svc:1235/pings';
 
 
 app.get('/', (req, res) => {
+    //req given inside cluster
   http.get(PINGPONG_URL, (pingRes) => {
     let data = '';
     pingRes.on('data', chunk => data += chunk);

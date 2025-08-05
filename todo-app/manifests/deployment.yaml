@@ -17,7 +17,7 @@ spec:
           emptyDir: {}  # non persistent volume for caching images
       containers:
         - name: todo-container
-          image: dev1abhi/todo-app:1.4
+          image: dev1abhi/todo-app:1.7
           env:
            - name: PORT
              value: "4000"

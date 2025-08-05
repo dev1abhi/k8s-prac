@@ -13,3 +13,17 @@ spec:
                 name: todo-app-svc     # ClusterIP service name
                 port:
                   number: 1234         # Must match the service's `port`
+          - path: /todos
+            pathType: Prefix
+            backend:
+              service:
+                name: todo-app-svc     
+                port:
+                  number: 1234         
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: todo-backend-svc # Backend service
+                port:
+                  number: 1230         # Backend service port
