@@ -12,14 +12,14 @@ spec:
       labels:
         app: pingpong
     spec:
-      volumes:
-        - name: shared-volume
-          persistentVolumeClaim:
-            claimName: shared-pvc
+      # volumes:
+      #   - name: shared-volume
+          # persistentVolumeClaim:
+          #   claimName: shared-pvc
       containers:
         - name: pingpong
-          image: dev1abhi/pingpong-app:1.1
-          volumeMounts:
-            - name: shared-volume
-              mountPath: /shared
+          image: dev1abhi/pingpong-app:1.2
+          # volumeMounts:
+          #   - name: shared-volume
+          #     mountPath: /shared
 

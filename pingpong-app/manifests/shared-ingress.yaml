@@ -6,6 +6,13 @@ spec:
   rules:
     - http:
         paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: log-output-svc
+                port:
+                  number: 1233  #service's port of log-output
           - path: /status
             pathType: Prefix
             backend:
@@ -14,6 +21,13 @@ spec:
                 port:
                   number: 1233  #service's port of log-output
           - path: /pingpong
+            pathType: Prefix
+            backend:
+              service:
+                name: pingpong-svc
+                port:
+                  number: 1235  #service's port of pingpong
+          - path: /pings
             pathType: Prefix
             backend:
               service:

@@ -15,22 +15,22 @@ spec:
       volumes:
         - name: shared-logs            # emptyDir volume for log-writer and log-reader
           emptyDir: {}
-        - name: pingpong-data          # persistent volume claim (shared with ping-pong app)
-          persistentVolumeClaim:
-            claimName: shared-pvc
+      #   - name: pingpong-data          # persistent volume claim (shared with ping-pong app)
+      #     persistentVolumeClaim:
+      #       claimName: shared-pvc
       containers:
         - name: log-writer
           image: dev1abhi/log-writer:1.0
-          volumeMounts:
+          volumeMounts:         #emp dir volume for log-writer
             - name: shared-logs
               mountPath: /shared
 
         - name: log-reader
-          image: dev1abhi/log-reader:1.2
+          image: dev1abhi/log-reader:1.3
           ports:
             - containerPort: 3000
-          volumeMounts:
+          volumeMounts:          #emp dir volume for log-reader
             - name: shared-logs
               mountPath: /shared
-            - name: pingpong-data
-              mountPath: /data
+          #   - name: pingpong-data
+          #     mountPath: /data
