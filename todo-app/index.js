@@ -2,21 +2,23 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const followRedirects = require('follow-redirects').https;
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-const imageDir = '/cache';
+// From ConfigMap
+const PORT = process.env.PORT;
+const BACKEND_URL = process.env.BACKEND_URL; 
+const IMAGE_SOURCE_URL = process.env.IMAGE_SOURCE_URL;
+
+const imageDir = process.env.CACHE_DIR || '/cache';
 const imagePath = path.join(imageDir, 'image.jpg');
 const metadataPath = path.join(imageDir, 'timestamp.txt');
-const BACKEND_URL = 'http://todo-backend-svc:1230/api/todos';
 
-// Serve static frontend files
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json()); 
+app.use(express.json());
 
-// Proxy POST /api/todos
+// Proxy GET /todos used in script.js
 app.get('/todos', async (req, res) => {
   try {
     const response = await fetch(BACKEND_URL);
@@ -28,7 +30,7 @@ app.get('/todos', async (req, res) => {
   }
 });
 
-
+// Proxy POST /todos used in script.js
 app.post('/todos', async (req, res) => {
   try {
     const response = await fetch(BACKEND_URL, {
@@ -44,7 +46,7 @@ app.post('/todos', async (req, res) => {
   }
 });
 
-// Endpoint to serve image as base64
+// Serve image 
 app.get('/image', (req, res) => {
   updateCacheIfNeeded(() => {
     if (fs.existsSync(imagePath)) {
@@ -57,7 +59,7 @@ app.get('/image', (req, res) => {
   });
 });
 
-// (Download logic stays the same)
+// Download image 
 function downloadImage(url, dest, cb) {
   const file = fs.createWriteStream(dest);
   followRedirects.get(url, (response) => {
@@ -68,6 +70,7 @@ function downloadImage(url, dest, cb) {
   });
 }
 
+// Cache logic 
 function isExpired() {
   if (!fs.existsSync(metadataPath)) return true;
   const timestamp = parseInt(fs.readFileSync(metadataPath, 'utf8'));
@@ -78,7 +81,7 @@ function isExpired() {
 function updateCacheIfNeeded(cb) {
   if (isExpired()) {
     console.log('⏱ Fetching a new image...');
-    downloadImage('https://picsum.photos/600', imagePath, () => {
+    downloadImage(IMAGE_SOURCE_URL, imagePath, () => {
       fs.writeFileSync(metadataPath, Date.now().toString());
       cb();
     });
