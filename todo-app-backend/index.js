@@ -5,8 +5,9 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-const DATA_FILE = '/app/data/todos.json';
+//getting from configMap
+const PORT = process.env.PORT;
+const DATA_FILE = process.env.DATA_FILE; 
 
 app.use(cors());
 app.use(express.json());

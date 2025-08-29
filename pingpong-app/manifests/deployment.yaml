@@ -19,7 +19,12 @@ spec:
           #   claimName: shared-pvc
       containers:
         - name: pingpong
-          image: dev1abhi/pingpong-app:1.2
+          image: dev1abhi/pingpong-app:1.3
+          envFrom:
+            - configMapRef:
+               name: postgres-config
+            - secretRef:
+               name: postgres-secret
           # volumeMounts:
           #   - name: shared-volume
           #     mountPath: /shared

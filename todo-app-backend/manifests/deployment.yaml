@@ -13,13 +13,18 @@ spec:
       labels:
         app: todo-backend
     spec:
-      containers:
-        - name: todo-backend
-          image: dev1abhi/todo-backend:1.0
-          volumeMounts:
-            - name: todo-data
-              mountPath: /app/data
       volumes:
         - name: todo-data
           emptyDir: {}
+      containers:
+        - name: todo-backend
+          image: dev1abhi/todo-backend:1.1
+          volumeMounts:
+            - name: todo-data
+              mountPath: /app/data
+          envFrom:
+            - configMapRef:
+                name: todo-backend-config
+
+      
  

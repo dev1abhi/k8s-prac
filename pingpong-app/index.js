@@ -1,28 +1,55 @@
 const express = require('express');
-// const fs = require('fs');
-// const path = require('path');
+const { Pool } = require('pg');
+
 const app = express();
 
-// const filePath = '/shared/count.txt';
-let counter = 0;
-
-// Initialize counter from file (if exists)
-// if (fs.existsSync(filePath)) {
-//   const value = parseInt(fs.readFileSync(filePath, 'utf8'));
-//   if (!isNaN(value)) {
-//     counter = value;
-//   }
-// }
-
-app.get('/pingpong', (req, res) => {
-  counter++;
-  // fs.writeFileSync(filePath, counter.toString());
-  res.send(`ping-pong count ${counter}`);
+// Create a Postgres connection pool
+const pool = new Pool({
+  host: process.env.POSTGRES_HOST ,
+  user: process.env.POSTGRES_USER ,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB ,
+  port: process.env.POSTGRES_PORT ,
 });
 
-app.get('/pings', (req, res) => {
-  res.send(`pong count: ${counter}`);
+// Ensure table exists
+async function initDb() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS counters (
+      id SERIAL PRIMARY KEY,
+      name TEXT UNIQUE,
+      value INT DEFAULT 0
+    )
+  `);
+
+  // Ensure we have a "pingpong" counter row
+  await pool.query(`
+    INSERT INTO counters (name, value)
+    VALUES ('pingpong', 0)
+    ON CONFLICT (name) DO NOTHING
+  `);
+}
+
+initDb().catch((err) => {
+  console.error('Error initializing database:', err);
+  process.exit(1);
 });
+
+// Route: Increment counter
+app.get('/pingpong', async (req, res) => {
+  try {
+    await pool.query(`
+      UPDATE counters SET value = value + 1 WHERE name = 'pingpong'
+    `);
+    const result = await pool.query(`SELECT value FROM counters WHERE name = 'pingpong'`);
+    res.send(`ping-pong count ${result.rows[0].value}`);
+  } catch (err) {
+    console.error('Error updating counter:', err);
+    res.status(500).send('Database error');
+  }
+});
+
+
 
 const PORT = process.env.PORT || 4001;
 app.listen(PORT, () => {
