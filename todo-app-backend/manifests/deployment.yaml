@@ -18,13 +18,17 @@ spec:
           emptyDir: {}
       containers:
         - name: todo-backend
-          image: dev1abhi/todo-backend:1.1
+          image: dev1abhi/todo-backend:1.2
           volumeMounts:
             - name: todo-data
               mountPath: /app/data
           envFrom:
             - configMapRef:
                 name: todo-backend-config
+            - configMapRef:
+                name: postgres-config
+            - secretRef:
+                name: postgres-secret
 
       
  
